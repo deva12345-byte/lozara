@@ -88,6 +88,9 @@ route.post('/list/order',listorder)
 var{deleteorder}=require('./controller/deleteorder')
 route.post('/delete/order',deleteorder)
 
+var{DeliveryStatus}=require ('./controller/deliverystatus')
+route.post('/update/deliverystatus',DeliveryStatus)
+
 
 
 
