@@ -9,3 +9,10 @@ module.exports.DeliveryStatusQuery=async(delivery_status,order_id)=>{
     return data;
 
 }
+
+module.exports.listorderQuery=async(order_id)=>{
+     var Query = `select * from orders where od_id   = ? `;
+    var data = query(Query, [order_id]);
+    return data;
+
+}
