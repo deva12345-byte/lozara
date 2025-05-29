@@ -4,9 +4,6 @@ const model = require('../model/addcart');
 module.exports.addcart = async (req, res) => {
     try {
         let { userid, productid,quantity} = req.body
-
-        
-
         if (!userid || !productid) {
             return res.send({
                 result: false,
