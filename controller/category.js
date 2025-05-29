@@ -5,9 +5,9 @@ var model = require("../model/category");
 module.exports.categoryadd = async (req, res) => {
 
     try {
-        let { categoryname } =req.body
+        let { categoryname } = req.body
 
-        if (!categoryname ) {
+        if (!categoryname) {
             return res.send({
                 result: false,
                 message: "insufficent parameter"
@@ -59,8 +59,10 @@ module.exports.Listcategory = async (req, res) => {
             return res.send({
                 result: true,
                 message: "data retrieved",
-                list: listcategory
+                list: listcategory,
+
             });
+
         } else {
             return res.send({
                 result: false,
@@ -112,7 +114,7 @@ module.exports.Editcategory = async (req, res) => {
     try {
 
 
-        const { c_id,categoryname } = req.body;
+        const { c_id, categoryname } = req.body;
 
         if (!c_id) {
             return res.send({
@@ -129,7 +131,7 @@ module.exports.Editcategory = async (req, res) => {
             });
         } else {
 
-            var updateResult = await model.UpdatecategoryDetails(categoryname,c_id);
+            var updateResult = await model.UpdatecategoryDetails(categoryname, c_id);
         }
 
 
