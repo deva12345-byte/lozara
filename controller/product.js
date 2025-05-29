@@ -15,9 +15,9 @@ module.exports.Productadd = async (req, res) => {
                     data: err,
                 });
             }
-            let{productname,prize,discount_prize,discount,description}=fields
+            let{productname,prize,discount_prize,discount,description,category}=fields
             
-            if (!productname || !prize|| !discount_prize ||!discount|| !description) {
+            if (!productname || !prize|| !discount_prize ||!discount|| !description || !category) {
                 return res.send({
                     result: false,
                     message: "insufficent parameter"
@@ -36,7 +36,7 @@ module.exports.Productadd = async (req, res) => {
                     if (err) console.log(err);
                     let imagepath = "uploads/products/" + files.image.originalFilename;
 
-                    await model.AddproductQuery(productname,prize,discount_prize,discount,description,imagepath,);
+                    await model.AddproductQuery(productname,category,prize,discount_prize,discount,description,imagepath,);
 
                 })
                 return res.send({
@@ -62,10 +62,13 @@ module.exports.Productadd = async (req, res) => {
 }
 module.exports.Listproduct = async (req, res) => {
     try {
-        let { p_id } = req.body || {}
+        let { p_id,category_id } = req.body || {}
         var condition = ""
         if (p_id) {
             condition = `where p_id ='${p_id}' `
+        }
+        if (category_id) {
+            condition = `where p_category ='${category_id}' `
         }
         let listproduct = await model.ListproductQuerry(condition);
         if (listproduct.length > 0) {
