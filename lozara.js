@@ -6,6 +6,7 @@ var https = require("https")
 var http = require('http')
 const fs = require('fs');
 require('dotenv').config({ encoding: 'latin1' })
+
 var privateKey = fs.readFileSync('/etc/ssl/private.key', 'utf8').toString();
 
 var certificate = fs.readFileSync('/etc/ssl/certificate.crt', 'utf8').toString();
@@ -16,6 +17,7 @@ var options = { key: privateKey, cert: certificate, ca: ca };
 
 var server = https.createServer(options, app);
 // var server = http.createServer(app);
+
 app.use(
     bodyparser.urlencoded({
         extended: false,
