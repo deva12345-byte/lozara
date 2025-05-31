@@ -28,11 +28,18 @@ module.exports.checkbannerQuery =async(b_id)=>{
 
 }
 
-module.exports.UpdateBannerDetails=async (b_id) => {
-    var Query= ` update banner ${condition} where b_id = ?`;
+module.exports.UpdateBannerDetails=async (updateQuery,b_id) => {
+    var Query= ` update banner ${updateQuery} where b_id = ?`;
     var data=await query(Query,[b_id]);
     return data;
   }
+
+  module.exports.UpdateBannerImage=async (imagePath, banner_id) => {
+    var Query= ` update banner set b_image=? where b_id = ?`;
+    var data=await query(Query,[imagePath, banner_id]);
+    return data;
+  }
+
 
   
 

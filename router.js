@@ -12,7 +12,10 @@ var{ListBanners}=require('./controller/banner')
 route.post('/list/banner',ListBanners)
 
 var{deleteBanners}=require('./controller/banner');
-route.delete('/delete/banner',deleteBanners)
+route.post('/delete/banner',deleteBanners)
+ 
+ var{EditBanner}=require('./controller/banner');
+ route.post('/edit/banner',EditBanner)
 
 
 var{Register}=require('./controller/registration');
@@ -90,6 +93,19 @@ route.post('/delete/order',deleteorder)
 
 var{DeliveryStatus}=require ('./controller/deliverystatus')
 route.post('/update/deliverystatus',DeliveryStatus)
+
+
+
+var{forgotpassword}=require('./controller/forgotpassword')
+route.post('/forgotpassword',forgotpassword)
+
+var{ResetPassword}=require('./controller/forgotpassword')
+route.post('/changepassword',ResetPassword )
+
+var{verifyOtp}=require('./controller/forgotpassword')
+route.post('/verifyOtp',verifyOtp)
+
+
 
 
 

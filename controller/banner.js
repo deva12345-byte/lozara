@@ -23,14 +23,13 @@ module.exports.AddBanner = async (req, res) => {
                 });
             }
             console.log(heading, title, description);
-            console.log(files.image);
+            // console.log(files.image);
 
 
-            if (files) {
+            if (files.image) {
 
-
-                const oldPath = files.image[0]?.filepath;
-                const newFileName = files.image[0]?.originalFilename;
+                const oldPath = files.image.filepath;
+                const newFileName = files.image.originalFilename;
                 const newPath = path.join(process.cwd(), 'uploads', 'banner', newFileName);
 
                 try {
@@ -150,7 +149,7 @@ module.exports.EditBanner = async (req, res) => {
         });
       }
 
-      const { banner_id, title, subtitle, description } = fields;
+      const { banner_id, title, description,heading } = fields;
 
       if (!banner_id) {
         return res.send({
@@ -168,8 +167,8 @@ module.exports.EditBanner = async (req, res) => {
       }
 
       let updates = [];
+      if (heading) updates.push(`b_heading='${heading}'`);
       if (title) updates.push(`b_title='${title}'`);
-      if (subtitle) updates.push(`b_subtitle='${subtitle}'`);
       if (description) updates.push(`b_description='${description}'`);
 
       if (updates.length > 0) {
@@ -180,12 +179,12 @@ module.exports.EditBanner = async (req, res) => {
       if (files.image) {
         const oldPath = files.image.filepath;
         const fileName = files.image.originalFilename;
-        const newPath = path.join(process.cwd(), '/uploads/banners/', fileName);
+        const newPath = path.join(process.cwd(), '/uploads/banner/', fileName);
 
         const rawData = fs.readFileSync(oldPath);
         fs.writeFileSync(newPath, rawData);
 
-        const imagePath = `/uploads/banners/${fileName}`;
+        const imagePath = `/uploads/banner/${fileName}`;
         const imageUpdate = await model.UpdateBannerImage(imagePath, banner_id);
 
         if (!imageUpdate.affectedRows) {
@@ -204,7 +203,7 @@ module.exports.EditBanner = async (req, res) => {
   } catch (error) {
     return res.send({
       result: false,
-      message: error.message,
+      message: error.message
     });
   }
 

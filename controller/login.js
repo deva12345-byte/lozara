@@ -33,7 +33,7 @@ const SECRET_KEY = 'dkjghkdghfhglknghdxlkdnflsfjopoijoigjhpokp';
         result: false,
         message: 'Invalid credentials',
       });
-    }U
+    }
     // Generate JWT token
     const payload = {
       u_id: checkUser[0].u_id,
