@@ -251,7 +251,7 @@ console.log(req.body);
                 from: "lozara<support@choiceglobal.in>",
                 to: email,
                 subject: "changed password",
-                html
+                html:html
             })
             nodemailer.getTestMessageUrl(infos);
             return res.send({
