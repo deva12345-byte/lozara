@@ -15,9 +15,9 @@ module.exports.Productadd = async (req, res) => {
                     data: err,
                 });
             }
-            let{productname,prize,discount_prize,discount,description,category}=fields
-            
-            if (!productname || !prize|| !discount_prize ||!discount|| !description || !category) {
+            let { productname, prize, discount_prize, discount, description, category } = fields
+
+            if (!productname || !prize || !discount_prize || !discount || !description || !category) {
                 return res.send({
                     result: false,
                     message: "insufficent parameter"
@@ -36,7 +36,7 @@ module.exports.Productadd = async (req, res) => {
                     if (err) console.log(err);
                     let imagepath = "uploads/products/" + files.image.originalFilename;
 
-                    await model.AddproductQuery(productname,category,prize,discount_prize,discount,description,imagepath,);
+                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, imagepath,);
 
                 })
                 return res.send({
@@ -62,7 +62,7 @@ module.exports.Productadd = async (req, res) => {
 }
 module.exports.Listproduct = async (req, res) => {
     try {
-        let { p_id,category_id } = req.body || {}
+        let { p_id, category_id } = req.body || {}
         var condition = ""
         if (p_id) {
             condition = `where p_id ='${p_id}' `
@@ -93,6 +93,7 @@ module.exports.Listproduct = async (req, res) => {
         });
     }
 }
+
 
 module.exports.deleteproduct = async (req, res) => {
     try {
@@ -125,80 +126,80 @@ module.exports.deleteproduct = async (req, res) => {
     }
 }
 module.exports.Editproduct = async (req, res) => {
-  try {
-    const form = new formidable.IncomingForm({ multiples: false });
+    try {
+        const form = new formidable.IncomingForm({ multiples: false });
 
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return res.send({
-          result: false,
-          message: 'File Upload Failed!',
-          data: err,
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                return res.send({
+                    result: false,
+                    message: 'File Upload Failed!',
+                    data: err,
+                });
+            }
+
+            const { p_id, productname, prize, discount_prize, discount, description } = fields;
+
+            if (!p_id) {
+                return res.send({
+                    result: false,
+                    message: 'Insufficient parameters',
+                });
+            }
+
+            const productExists = await model.checkproductQuery(p_id);
+            if (productExists.length === 0) {
+                return res.send({
+                    result: false,
+                    message: 'product does not exist',
+                });
+            }
+
+            let updates = [];
+            if (productname) updates.push(`p_productname='${productname}'`);
+            if (prize) updates.push(`p_prize='${prize}'`);
+            if (description) updates.push(`p_description='${description}'`);
+            if (discount_prize) updates.push(`p_discount_prize='${discount_prize}'`)
+            if (discount) updates.push(`p_discount='${discount}'`)
+
+
+            if (updates.length > 0) {
+                const updateQuery = `SET ${updates.join(', ')}`;
+                var updateResult = await model.UpdateproductDetails(updateQuery, p_id);
+            }
+
+            if (files.image) {
+                const oldPath = files.image.filepath;
+                const fileName = files.image.originalFilename;
+                const newPath = path.join(process.cwd(), '/uploads/products/', fileName);
+
+                const rawData = fs.readFileSync(oldPath);
+                fs.writeFileSync(newPath, rawData);
+                const imagePath = `/uploads/products/${fileName}`;
+                const imageUpdate = await model.UpdateproductImage(imagePath, p_id);
+
+                if (!imageUpdate.affectedRows) {
+                    return res.send({
+                        result: false,
+                        message: 'Failed to update product image',
+                    });
+                }
+            }
+
+            return res.send({
+                result: true,
+                message: 'product updated successfully',
+            });
         });
-      }
-
-      const {p_id,productname,prize,discount_prize,discount,description } = fields;
-
-      if (!p_id) {
+    } catch (error) {
         return res.send({
-          result: false,
-          message: 'Insufficient parameters',
-        });
-      }
-
-      const productExists = await model.checkproductQuery(p_id);
-      if (productExists.length === 0) {
-        return res.send({
-          result: false,
-          message: 'product does not exist',
-        });
-      }
-
-      let updates = [];
-      if (productname) updates.push(`p_productname='${productname}'`);
-      if (prize) updates.push(`p_prize='${prize}'`);
-      if (description) updates.push(`p_description='${description}'`);
-      if(discount_prize)updates.push(`p_discount_prize='${discount_prize}'`)
-      if(discount)updates.push(`p_discount='${discount}'`)
-
-
-      if (updates.length > 0) {
-        const updateQuery = `SET ${updates.join(', ')}`;
-        var updateResult = await model.UpdateproductDetails(updateQuery, p_id);
-      }
-
-      if (files.image) {
-        const oldPath = files.image.filepath;
-        const fileName = files.image.originalFilename;
-        const newPath = path.join(process.cwd(), '/uploads/products/', fileName);
-
-        const rawData = fs.readFileSync(oldPath);
-        fs.writeFileSync(newPath, rawData);
-        const imagePath = `/uploads/products/${fileName}`;
-        const imageUpdate = await model.UpdateproductImage(imagePath, p_id);
-
-        if (!imageUpdate.affectedRows) {
-          return res.send({
             result: false,
-            message: 'Failed to update product image',
-          });
-        }
-      }
-
-      return res.send({
-        result: true,
-        message: 'product updated successfully',
-      });
-    });
-  } catch (error) {
-    return res.send({
-      result: false,
-      message: error.message,
-    });
-  }
+            message: error.message,
+        });
+    }
 
 };
 
 
 
-    
+

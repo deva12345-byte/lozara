@@ -9,7 +9,7 @@ module.exports.SelectImage = async () => {
 }
 
 module.exports.AddproductQuery=async (productname,category,prize,discount_prize,discount,description,imagepath) => {
-   var Query = `insert into products (P_productname,p_category,p_prize,p_discount_prize,p_discount,p_description,p_image) values (?,?,?,?,?,?);`
+   var Query = `insert into products (P_productname,p_category,p_prize,p_discount_prize,p_discount,p_description,p_image) values (?,?,?,?,?,?,?);`
     var data = query(Query, [productname,category,prize,discount_prize,discount,description,imagepath]);
     return data;
 }

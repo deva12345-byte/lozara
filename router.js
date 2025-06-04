@@ -105,8 +105,25 @@ route.post('/changepassword',ResetPassword )
 var{verifyOtp}=require('./controller/forgotpassword')
 route.post('/verifyOtp',verifyOtp)
 
+var{getintouchadd}=require('./controller/get in touch')
+route.post('/add/get_in_touch',getintouchadd)
 
 
+var{listgetintouch}=require('./controller/getintouchlist')
+route.post('/list/get_in_touch',listgetintouch)
+
+
+var{deletegetintouch}=require('./controller/getintouchdelete')
+route.post('/delete/get_in_touch',deletegetintouch)
+
+
+
+var{editgetintouch }=require('./controller/getintouchedit')
+route.post('/edit/get_in_touch',editgetintouch )
+
+
+var{reviewadd }= require('./controller/reviewadd')
+    route.post('/add/review',reviewadd )
 
 
 
