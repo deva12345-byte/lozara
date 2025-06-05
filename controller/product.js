@@ -15,16 +15,14 @@ module.exports.Productadd = async (req, res) => {
                     data: err,
                 });
             }
-            let { productname, prize, discount_prize, discount, description, category } = fields
+            let { productname, prize, discount_prize, discount, description, concern_category, category, rating, stock } = fields
 
-            if (!productname || !prize || !discount_prize || !discount || !description || !category) {
+            if (!productname || !prize || !discount_prize || !discount || !description || !concern_category || !category || !stock) {
                 return res.send({
                     result: false,
                     message: "insufficent parameter"
                 })
             }
-            // var checkproduct = await model.checkproductQuery()
-            // console.log(checkproduct, "pppppppppp");
 
             if (files.image) {
                 var oldPath = files.image.filepath;
@@ -36,9 +34,11 @@ module.exports.Productadd = async (req, res) => {
                     if (err) console.log(err);
                     let imagepath = "uploads/products/" + files.image.originalFilename;
 
-                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, imagepath,);
+                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath);
 
                 })
+
+
                 return res.send({
                     result: true,
                     message: "product added successfully"
@@ -62,20 +62,31 @@ module.exports.Productadd = async (req, res) => {
 }
 module.exports.Listproduct = async (req, res) => {
     try {
-        let { p_id, category_id } = req.body || {}
+        let { p_id, category_id, concern_category_id } = req.body || {}
         var condition = ""
         if (p_id) {
-            condition = `where p_id ='${p_id}' `
+            condition = `where p.p_id ='${p_id}' `
         }
         if (category_id) {
-            condition = `where p_category ='${category_id}' `
+            condition = `where p.p_category ='${category_id}' `
+        }
+        if (concern_category_id) {
+            condition = `where p.p_concern_category='${concern_category_id}'`
         }
         let listproduct = await model.ListproductQuerry(condition);
         if (listproduct.length > 0) {
+
+        let data = await Promise.all(
+                listproduct.map(async (el) => {
+                    let getreviewcount = await model.GetReview(el.p_id);
+                    el.reviewcount = getreviewcount[0]?.review_count;
+                    return el;
+                })
+            );
             return res.send({
                 result: true,
                 message: "data retrieved",
-                list: listproduct
+                list: data
             });
         } else {
             return res.send({
@@ -125,6 +136,8 @@ module.exports.deleteproduct = async (req, res) => {
         });
     }
 }
+
+
 module.exports.Editproduct = async (req, res) => {
     try {
         const form = new formidable.IncomingForm({ multiples: false });
@@ -138,7 +151,7 @@ module.exports.Editproduct = async (req, res) => {
                 });
             }
 
-            const { p_id, productname, prize, discount_prize, discount, description } = fields;
+            const { p_id, productname, prize, category, concern_category, discount_prize, discount, stock, description } = fields;
 
             if (!p_id) {
                 return res.send({
@@ -161,6 +174,9 @@ module.exports.Editproduct = async (req, res) => {
             if (description) updates.push(`p_description='${description}'`);
             if (discount_prize) updates.push(`p_discount_prize='${discount_prize}'`)
             if (discount) updates.push(`p_discount='${discount}'`)
+            if (category) updates.push(`p_category='${category}'`)
+            if (concern_category) updates.push(`p_concern_category='${concern_category}'`)
+            if (stock) updates.push(`p_stocks='${stock}'`)
 
 
             if (updates.length > 0) {
