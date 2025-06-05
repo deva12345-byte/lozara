@@ -15,9 +15,9 @@ module.exports.Productadd = async (req, res) => {
                     data: err,
                 });
             }
-            let { productname, prize, discount_prize, discount, description, concern_category, category, rating,concern_category_name, stock } = fields
+            let { productname, prize, discount_prize, discount, description, concern_category, category, rating, stock } = fields
 
-            if (!productname || !prize || !discount_prize || !discount || !description || !concern_category || !category ||!concern_category_name ||!stock) {
+            if (!productname || !prize || !discount_prize || !discount || !description || !concern_category || !category || !stock) {
                 return res.send({
                     result: false,
                     message: "insufficent parameter"
