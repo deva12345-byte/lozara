@@ -34,7 +34,7 @@ module.exports.Productadd = async (req, res) => {
                     if (err) console.log(err);
                     let imagepath = "uploads/products/" + files.image.originalFilename;
 
-                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category,concern_category_name, rating, stock, imagepath);
+                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath);
 
                 })
 
