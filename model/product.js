@@ -8,14 +8,16 @@ module.exports.SelectImage = async () => {
     return data;
 }
 
-module.exports.AddproductQuery=async (productname,category,prize,discount_prize,discount,description,concern_category,rating,stock,imagePath) => {
+module.exports.AddproductQuery=async (productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath) => {
    var Query = `insert into products (P_productname,p_category,p_prize,p_discount_prize,p_discount,p_description,p_concern_category,p_rating,p_stocks,p_image) values (?,?,?,?,?,?,?,?,?,?);`
-    var data = await query(Query, [productname,category,prize,discount_prize,discount,description,concern_category,rating,stock,imagePath]);
+    var data = await query(Query, [productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath]);
     return data;
 }
 
 module.exports.ListproductQuerry=async(condition)=>{
-    var Query =` SELECT p.*, c.c_name FROM products p INNER JOIN category c ON p.p_category = c.c_id ${condition}`
+    var Query =` SELECT p.*, c.c_name,cc.cc_name FROM products p 
+    INNER JOIN category c ON p.p_category = c.c_id 
+    INNER JOIN concerncategory cc ON p.p_concern_category = cc.cc_id ${condition}`
     var data = await query(Query);
     return data;
 
