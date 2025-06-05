@@ -20,3 +20,15 @@ module.exports.checkuserQuery=async(user_id)=>{
     var data =query(Query,[user_id]);
     return data;
 }
+
+module.exports.getAllRatingsQuery=async(product_id)=>{
+    var Query= `select r_rating from review where r_p_id=?`;
+    var data =query(Query,[product_id]);
+    return data;
+}
+
+module.exports.updateProductRatingQuery=async(product_id,avgRating)=>{
+    var Query =`update products set p_rating=? WHERE p_id=?`;
+    var data =query(Query,[avgRating,product_id]);
+    return data;
+}
