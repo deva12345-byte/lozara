@@ -135,6 +135,15 @@ route.post('/list/listourstandard',listourstandard)
 var{deleteourstandard }=require('./controller/ourstandard')
 route.post('/delete/ourstandard',deleteourstandard )
 
+var{ContactUs}=require('./controller/contactus ')
+route.post('/add/contact',ContactUs)
+
+var{listcontact}=require('./controller/contactus ')
+route.post('/list/contact',listcontact)
+
+var{deletecontact}=require('./controller/contactus ')
+route.post('/delete/contact',deletecontact)
+
 
 
 
