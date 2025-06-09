@@ -10,8 +10,8 @@ module.exports.AddOrder = async (req, res) => {
             auth: {
                 type: "custom",
                 method: "PLAIN",
-                user: 'noreply@forevieinternational.com',
-                pass: 'noreply@Forevie2024',
+                user: 'noreply@drlifeboat.com',
+                pass: 'Drlifeboat@noreply123',
             },
         });
         var { u_id, amount, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode, product_details } = req.body;
@@ -164,7 +164,7 @@ module.exports.AddOrder = async (req, res) => {
                     let output = await Promise.all(
                         data.map(async (element) => {
                             let info = await transporter.sendMail({
-                                from: "LOZARA <noreply@forevieinternational.com>",
+                                from: "LOZARA <noreply@drlifeboat.com>",
                                 to: element.email,
                                 subject: element.subject,
                                 html: element.html,
@@ -187,10 +187,50 @@ module.exports.AddOrder = async (req, res) => {
                         });
                     }
                 } else {
-                    return res.send({
-                        result: false,
-                        message: "online payment not avilable "
-                    })
+                   
+                                   let key_id = "rzp_live_uWwzPjKoomxUqv"
+                                   let key_secret = "ImoGHKUUoqKw7JfTKt3IAnBX"
+                   
+                                   //-------test -----------//
+                   
+                                   // let key_id = "rzp_test_OV69louybHZfVB"
+                                   // let key_secret = "n53FP19r6Wy35LLdlqBCxoCH"
+                   
+                                   let callbackurl = `https://lunarsenterprises.com:6029/lozara/razorpay/callback?order_id=${addorder.insertId}`
+                                   var authHeader = {
+                                       auth: {
+                                           username: key_id,
+                                           password: key_secret,
+                                       },
+                                   };
+                                   var paymentLinkData = {
+                                       amount: Number(amount) * 100, // Amount in paisa
+                                       currency: 'INR',
+                                       description: 'payment for product', // You can use the merchantReference or any appropriate description here
+                                       customer: {
+                                           name: user_name,
+                                           email: user_email,
+                                           phone: user_mobile_no // Assuming user is an object with name, contact, and email properties
+                                       },
+                                       callback_url: callbackurl
+                                   };
+                   
+                   
+                                   axios.post('https://api.razorpay.com/v1/payment_links', paymentLinkData, authHeader)
+                                       .then(response => {
+                                           console.log('Payment link created successfully:', response.data);
+                                           return res.json({
+                                               result: true,
+                                               message: 'order added successfully',
+                                               paymentLinkUrl: response.data.short_url
+                                           });
+                                           // Handle response data as needed
+                                       })
+                                       .catch(error => {
+                                           console.error('Error creating payment link:', error.response.data.error);
+                                           // Handle error response
+                                       });
+                               
                 }
 
             } else {
