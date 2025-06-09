@@ -15,7 +15,7 @@ module.exports.Productadd = async (req, res) => {
                     data: err,
                 });
             }
-            let { productname, prize, discount_prize, discount, description, concern_category, category, rating, stock, p_upcoming } = fields
+            let { productname, prize, discount_prize, discount, description, concern_category, category, stock, p_upcoming } = fields
 
             if (!productname || !prize || !discount_prize || !discount || !description || !concern_category || !category || !stock || !p_upcoming) {
                 return res.send({
@@ -34,7 +34,7 @@ module.exports.Productadd = async (req, res) => {
                     if (err) console.log(err);
                     let imagepath = "uploads/products/" + files.image.originalFilename;
 
-                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, p_upcoming, imagepath);
+                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category, stock, p_upcoming, imagepath);
 
                 })
 
@@ -46,7 +46,7 @@ module.exports.Productadd = async (req, res) => {
             } else {
                 return res.send({
                     result: true,
-                    message: "image required"
+                    message: "image is required"
                 })
             }
         })
