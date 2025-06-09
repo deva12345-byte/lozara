@@ -15,9 +15,9 @@ module.exports.Productadd = async (req, res) => {
                     data: err,
                 });
             }
-            let { productname, prize, discount_prize, discount, description, concern_category, category, rating, stock } = fields
+            let { productname, prize, discount_prize, discount, description, concern_category, category, rating, stock, p_upcoming } = fields
 
-            if (!productname || !prize || !discount_prize || !discount || !description || !concern_category || !category || !stock) {
+            if (!productname || !prize || !discount_prize || !discount || !description || !concern_category || !category || !stock || !p_upcoming) {
                 return res.send({
                     result: false,
                     message: "insufficent parameter"
@@ -34,7 +34,7 @@ module.exports.Productadd = async (req, res) => {
                     if (err) console.log(err);
                     let imagepath = "uploads/products/" + files.image.originalFilename;
 
-                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath);
+                    await model.AddproductQuery(productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, p_upcoming, imagepath);
 
                 })
 
@@ -62,10 +62,13 @@ module.exports.Productadd = async (req, res) => {
 }
 module.exports.Listproduct = async (req, res) => {
     try {
-        let { p_id, category_id, concern_category_id } = req.body || {}
+        let { p_id, category_id, concern_category_id, upcoming, bestsellers } = req.body || {}
         var condition = ""
         if (p_id) {
             condition = `where p.p_id ='${p_id}' `
+        }
+        if (upcoming) {
+            condition = `where p.p_upcoming = '1' `
         }
         if (category_id) {
             condition = `where p.p_category ='${category_id}' `
@@ -73,16 +76,53 @@ module.exports.Listproduct = async (req, res) => {
         if (concern_category_id) {
             condition = `where p.p_concern_category='${concern_category_id}'`
         }
+        if (bestsellers) {
+            let topseller = await model.GetTopseller()
+
+            if (topseller.length > 0) {
+                let data = await Promise.all(
+                    topseller.map(async (el) => {
+                        let p_id=el.op_product_id
+                        if (p_id) {
+                            condition = `where p.p_id ='${p_id}' `
+                        }
+                        // Fetch product details if needednpm i
+                        let product = await model.ListproductQuerry(condition);
+                        // You might want to merge product data into el, e.g.:
+                        el.productDetails = product;
+
+                        // Fetch review count safely
+                        let getreviewcount = await model.GetReview(p_id);
+                        el.reviewcount = getreviewcount[0]?.review_count ?? 0;
+
+                        return el;
+                    })
+                );
+
+                return res.send({
+                    result: true,
+                    message: "data retrieved",
+                    list: data
+                });
+            } else {
+                return res.send({
+                    result: false,
+                    message: "data not found",
+                });
+
+            }
+        }
         let listproduct = await model.ListproductQuerry(condition);
         if (listproduct.length > 0) {
 
-        let data = await Promise.all(
+            let data = await Promise.all(
                 listproduct.map(async (el) => {
                     let getreviewcount = await model.GetReview(el.p_id);
                     el.reviewcount = getreviewcount[0]?.review_count;
                     return el;
                 })
             );
+
             return res.send({
                 result: true,
                 message: "data retrieved",
@@ -95,6 +135,8 @@ module.exports.Listproduct = async (req, res) => {
             });
 
         }
+
+
 
     } catch (error) {
         return res.send({

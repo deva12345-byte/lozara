@@ -8,9 +8,23 @@ module.exports.SelectImage = async () => {
     return data;
 }
 
-module.exports.AddproductQuery=async (productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath) => {
-   var Query = `insert into products (P_productname,p_category,p_prize,p_discount_prize,p_discount,p_description,p_concern_category,p_rating,p_stocks,p_image) values (?,?,?,?,?,?,?,?,?,?);`
-    var data = await query(Query, [productname, category, prize, discount_prize, discount, description, concern_category, rating, stock, imagepath]);
+module.exports.GetTopseller = async () => {
+    var Query = `SELECT 
+    op_product_id
+FROM 
+    order_product
+GROUP BY 
+    op_product_id
+ORDER BY 
+    COUNT(*) DESC
+`
+    var data = query(Query);
+    return data;
+}
+
+module.exports.AddproductQuery=async (productname, category, prize, discount_prize, discount, description, concern_category, stock,p_upcoming, imagepath) => {
+   var Query = `insert into products (P_productname,p_category,p_prize,p_discount_prize,p_discount,p_description,p_concern_category,p_stocks,p_upcoming,p_image) values (?,?,?,?,?,?,?,?,?,?);`
+    var data = await query(Query, [productname, category, prize, discount_prize, discount, description, concern_category, stock,p_upcoming, imagepath]);
     return data;
 }
 
