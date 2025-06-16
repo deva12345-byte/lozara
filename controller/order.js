@@ -14,8 +14,8 @@ module.exports.AddOrder = async (req, res) => {
                 pass: 'Drlifeboat@noreply123',
             },
         });
-        var { u_id, amount, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode, product_details } = req.body;
-        if (!u_id || !amount || !payment_method || !user_name || !user_email || !user_mobile_no || !user_address || !user_state || !user_district || !user_city || !user_zipcode || !product_details) {
+        var { u_id, amount, payment_method, user_name, user_email, user_mobile_no,address_id, product_details } = req.body;
+        if (!u_id || !amount || !payment_method || !user_name || !user_email || !user_mobile_no || !address_id || !product_details) {
             return res.send({
                 result: false,
                 messagae: "insufficent parameter"
@@ -23,7 +23,7 @@ module.exports.AddOrder = async (req, res) => {
         }
         if (payment_method == "cash on delivery") {
             let date = moment().format("YYYY-MM-DD");
-            var addorder = await model.AddOrderquery(u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode);
+            var addorder = await model.AddOrderquery(u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, address_id);
             console.log(addorder.insertId, "orderid");
 
             if (addorder.affectedRows) {

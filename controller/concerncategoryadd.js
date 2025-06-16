@@ -24,16 +24,16 @@ module.exports.concerncategoryadd = async (req, res) => {
             }
             if (files.image) {
                 var oldpath = files.image.filepath;
-                var newPath = process.cwd() + "/uploads/concerncategories/" + files.image.orginalFilename;
+                var newPath = process.cwd() + "/uploads/concerncategories/" + files.image.originalFilename;
                 let rawData = fs.readFileSync(oldpath);
                 fs.writeFile(newPath, rawData, async function (err) {
                     if (err) console.log(err);
-                    let imagepath = "uploads/concerncategories/" + files.image.orginalFilename;
+                    let imagepath = "uploads/concerncategories/" + files.image.originalFilename;
                     await model.concerncategoryadd(concerncategoryname,imagepath);
                 })
                 return res.send({
                     result: true,
-                    message: "concern added successsfully"
+                    message: "concern category added successsfully"
 
                 });
             } else {

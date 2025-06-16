@@ -1,10 +1,10 @@
-var model = require("../model/ourstandard");
+var model = require("../model/ourSpecialities");
 const path = require('path');
 var fs = require("fs");
 var formidable = require("formidable");
 const { checkorderQuery } = require("../model/deleteorder");
 
-module.exports.addourstandard = async (req, res) => {
+module.exports.addOurSpecialities = async (req, res) => {
     try {
         var form = new formidable.IncomingForm({ multiples: true });
         form.parse(req, async function (err, fields, files) {
@@ -14,19 +14,27 @@ module.exports.addourstandard = async (req, res) => {
                     message: "file upload failed!",
                     data: err,
                 });
+            }
+
+            let { title } = fields
+            if (!title) {
+                return res.send({
+                    result: false,
+                    message: "title is required",
+                });
 
             }
             if (files.image) {
                 var oldPath = files.image.filepath;
                 var newPath =
-                    process.cwd() + "/uploads/ourstandard/" +
+                    process.cwd() + "/uploads/ourspecialities/" +
                     files.image.originalFilename;
                 let rawData = fs.readFileSync(oldPath);
                 fs.writeFile(newPath, rawData, async function (err) {
                     if (err) console.log(err);
-                    let imagepath = "uploads/ourstandard/" + files.image.originalFilename;
+                    let imagepath = "uploads/ourspecialities/" + files.image.originalFilename;
 
-                    await model.AddimageQuery(imagepath);
+                    await model.AddimageQuery(title, imagepath);
 
                 })
                 return res.send({
@@ -42,9 +50,7 @@ module.exports.addourstandard = async (req, res) => {
                 })
             }
 
-
         })
-
 
     } catch (error) {
         console.log(error);
@@ -55,15 +61,15 @@ module.exports.addourstandard = async (req, res) => {
 
     }
 }
-module.exports.listourstandard = async (req, res) => {
+module.exports.listOurSpecialities = async (req, res) => {
     try {
 
-        let listourstandard = await model.listourstandardQuery();
-        if (listourstandard.length > 0) {
+        let listOurSpecialities = await model.listOurSpecialitiesQuery();
+        if (listOurSpecialities.length > 0) {
             return res.send({
                 result: true,
                 message: "data retrieved",
-                list: listourstandard,
+                list: listOurSpecialities,
 
             });
 
@@ -83,39 +89,37 @@ module.exports.listourstandard = async (req, res) => {
 
     }
 }
-module.exports.deleteourstandard = async (req, res) => {
+module.exports.deleteOurSpecialities = async (req, res) => {
     try {
-        let o_id = req.body.o_id;
-        if (!o_id) {
+        let osp_id = req.body.osp_id;
+        if (!osp_id) {
 
             return res.send({
                 result: false,
-                message: "missing id",
+                message: "missing required id",
 
             })
         }
-        let checkourstandard = await model.checkourstandardQuery(o_id);
-        if (checkourstandard.length > 0) {
-
-            var deletesection = await model.removeourstandardQuery(o_id);
+        let checkOurSpecialities = await model.checkOurSpecialitiesQuery(osp_id);
+        if (checkOurSpecialities.length == 0) {
+            return res.send({
+                result: false,
+                message: " Our Specialities details is not found"
+            })
+        } else {
+            var deletesection = await model.removeOurSpecialitiesQuery(osp_id);
             if (deletesection.affectedRows > 0) {
                 return res.send({
                     result: true,
-                    message: "image deleted successfully"
+                    message: "deleted successfully"
 
                 })
             } else {
                 return res.send({
                     result: false,
-                    message: "failed to delete image",
+                    message: "failed to delete"
                 })
             }
-
-        } else {
-            return res.send({
-                result: false,
-                message: "ourstandard details not found",
-            })
         }
 
 
@@ -125,9 +129,6 @@ module.exports.deleteourstandard = async (req, res) => {
             message: error.message,
         });
     }
-
-
-
 
 
 }

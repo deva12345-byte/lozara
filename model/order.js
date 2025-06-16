@@ -2,9 +2,9 @@ var db = require("../db/db");
 var util = require("util")
 const query = util.promisify(db.query).bind(db);
 
-module.exports.AddOrderquery = async (u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode) => {
-    var Query = `insert into orders (od_u_id,od_amount, od_created_at, od_payment_method, user_name, user_email, user_mobile_no, user_address,user_state, user_district, user_city, user_zipcode) values(?,?,?,?,?,?,?,?,?,?,?,?)`;
-    var data = await query(Query, [u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode]);
+module.exports.AddOrderquery = async (u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, address_id) => {
+    var Query = `insert into orders (od_u_id,od_amount, od_created_at, od_payment_method, user_name, user_email, user_mobile_no, od_address_id) values(?,?,?,?,?,?,?,?)`;
+    var data = await query(Query, [u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, address_id]);
     return data;
 };
 module.exports.ProductInsert = async (order_id, element) => {

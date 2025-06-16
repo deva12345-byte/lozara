@@ -30,15 +30,21 @@ module.exports.AddproductQuery=async (productname, category, prize, discount_pri
 
 module.exports.ListproductQuerry=async(condition)=>{
     var Query =` SELECT p.*, c.c_name,cc.cc_name FROM products p 
-    INNER JOIN category c ON p.p_category = c.c_id 
-    INNER JOIN concerncategory cc ON p.p_concern_category = cc.cc_id ${condition}`
+    LEFT JOIN category c ON p.p_category = c.c_id 
+    LEFT JOIN concerncategory cc ON p.p_concern_category = cc.cc_id ${condition}`
     var data = await query(Query);
     return data;
 
 }
 
-module.exports.GetReview =async(p_id)=>{
+module.exports.GetReviewCount =async(p_id)=>{
     var Query =`SELECT COUNT(*) AS review_count FROM review WHERE r_p_id  = ?`;
+     var data = await query(Query,[p_id]);
+    return data;
+}
+
+module.exports.GetReview =async(p_id)=>{
+    var Query =`SELECT * FROM review WHERE r_p_id  = ?`;
      var data = await query(Query,[p_id]);
     return data;
 }
@@ -61,7 +67,7 @@ module.exports.UpdateproductDetails=async (updateQuery, p_id) => {
   }
   
 module.exports.UpdateproductImage= async (imagePath, p_id) => {
-    var Query = (`UPDATE products SET p_image = ? WHERE p_id = ?`);
+    var Query = `UPDATE products SET p_image = ? WHERE p_id = ?`;
     var data=await query(Query,[imagePath,p_id]);
     return data;
   }

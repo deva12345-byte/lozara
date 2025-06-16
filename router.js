@@ -73,10 +73,16 @@ route.post('/list/favourite', FavList)
 
 
 var { AddOrder } = require('./controller/order')
-route.post('/add/order', AddOrder)                                     //payment gateway integration
+route.post('/add/order', AddOrder)                                       //payment gateway integration                                 
 
 var { RazorpayCallback } = require('./controller/razorpaycallback')
-route.get('/razorpay/callback', RazorpayCallback)                          //payment gateway integration callback
+route.get('/razorpay/callback', RazorpayCallback)                       //payment gateway integration callback
+
+var { CancelOrder } = require('./controller/cancelOrder')
+route.post('/cancel-order', CancelOrder)
+
+var { Trackorder } = require('./controller/trackingorder')
+route.post('/update/order-tracking', Trackorder)
 
 
 var { listorder } = require('./controller/listorder')
@@ -118,7 +124,6 @@ route.post('/add/ourstandard', addourstandard)
 var{listourstandard}=require('./controller/ourstandard')
 route.post('/list/listourstandard',listourstandard)
 
-
 var{deleteourstandard }=require('./controller/ourstandard')
 route.post('/delete/ourstandard',deleteourstandard )
 
@@ -131,8 +136,43 @@ route.post('/list/contact',listcontact)
 var{deletecontact}=require('./controller/contactus ')
 route.post('/delete/contact',deletecontact)
 
+var{addOurSpecialities}=require('./controller/ourSpecialities')
+route.post('/add/our-specialities',addOurSpecialities)
 
+var{listOurSpecialities}=require('./controller/ourSpecialities')
+route.post('/list/our-specialities',listOurSpecialities)
 
+var{deleteOurSpecialities}=require('./controller/ourSpecialities')
+route.post('/delete/our-specialities',deleteOurSpecialities)
 
+var{EditPersonalInfo}=require('./controller/editProfile')
+route.post('/edit/profile',EditPersonalInfo)
+
+var{AddFaq}=require('./controller/faq')
+route.post('/add/faq',AddFaq)
+
+var{ListFaq}=require('./controller/faq')
+route.post('/list/faq',ListFaq)
+
+var{deleteFaq}=require('./controller/faq')
+route.post('/delete/faq',deleteFaq)
+
+var{EditFaq}=require('./controller/faq')
+route.post('/edit/faq',EditFaq)
+
+var{ListUser}=require('./controller/listusers')
+route.post('/list/users',ListUser)
+
+var{addAddress}=require('./controller/addAddress')
+route.post('/add/address',addAddress)
+
+var{ListAddress}=require('./controller/addAddress')
+route.post('/list/address',ListAddress)
+
+var{EditAddress}=require('./controller/addAddress')
+route.post('/edit/address',EditAddress)
+
+var{deleteAddress}=require('./controller/addAddress')
+route.post('/delete/address',deleteAddress)
 
 module.exports = route

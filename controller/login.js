@@ -5,20 +5,20 @@ const jwt = require('jsonwebtoken');
 
 module.exports.login = async (req, res) => {
   try {
-    const { email, password ,role} = req.body;
+    const { email, password, role } = req.body;
 
     // Validate input
-    if (!email || !password|| !role) {
+    if (!email || !password || !role) {
 
       return res.status(400).json({
         result: false,
         message: 'Insufficient parameters',
       });
     }
-const SECRET_KEY = 'dkjghkdghfhglknghdxlkdnflsfjopoijoigjhpokp';
+    const SECRET_KEY = 'dkjghkdghfhglknghdxlkdnflsfjopoijoigjhpokp';
 
     // Check if user exists
-    const checkUser = await model.CheckUser(email,role);
+    const checkUser = await model.CheckUser(email, role);
     if (checkUser.length == 0) {
       return res.status(404).json({
         result: false,
@@ -57,7 +57,7 @@ const SECRET_KEY = 'dkjghkdghfhglknghdxlkdnflsfjopoijoigjhpokp';
     console.error(error);
     return res.status(500).json({
       result: false,
-      message:error.message,
+      message: error.message,
     });
   }
 };

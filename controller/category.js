@@ -113,7 +113,6 @@ module.exports.deletecategory = async (req, res) => {
 module.exports.Editcategory = async (req, res) => {
     try {
 
-
         const { c_id, categoryname } = req.body;
 
         if (!c_id) {
@@ -133,9 +132,6 @@ module.exports.Editcategory = async (req, res) => {
 
             var updateResult = await model.UpdatecategoryDetails(categoryname, c_id);
         }
-
-
-
 
         return res.send({
             result: true,

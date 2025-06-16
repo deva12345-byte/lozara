@@ -15,12 +15,11 @@ module.exports.Register = async (req, res) => {
         let checkmail = await model.CheckMail(email);
 
         if (checkmail.length > 0) {
+
             return res.send({
                 result: false,
                 message: "email already registerd"
-
             });
-
 
         } else {
             var hashedpasssword = await bcrypt.hash(password, 10)

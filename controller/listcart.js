@@ -2,13 +2,10 @@ const model =require('../model/listcart');
 
 module.exports.lisṭcart = async (req, res) => {
     try {
-        let { ct_id,userid } = req.body;
-        let condition=''
-        if (ct_id) {
-            condition = `and ct_id='${ct_id}'`
+        let { userid } = req.body;
 
-        }
-        let listcart = await model.listcartQuery(userid,condition);
+        let listcart = await model.listcartQuery(userid);
+        
         if (listcart.length > 0){
             return res.send({
                 result: true,

@@ -62,7 +62,9 @@ module.exports.Productadd = async (req, res) => {
 }
 module.exports.Listproduct = async (req, res) => {
     try {
-        let { p_id, category_id, concern_category_id, upcoming, bestsellers } = req.body || {}
+
+        let { p_id, category_id, concern_category_id, upcoming, bestsellers, search } = req.body || {}
+
         var condition = ""
         if (p_id) {
             condition = `where p.p_id ='${p_id}' `
@@ -76,13 +78,16 @@ module.exports.Listproduct = async (req, res) => {
         if (concern_category_id) {
             condition = `where p.p_concern_category='${concern_category_id}'`
         }
+        if (search) {
+            condition = `where (p.p_productname like '%${search}%') `
+        }
         if (bestsellers) {
             let topseller = await model.GetTopseller()
 
             if (topseller.length > 0) {
                 let data = await Promise.all(
                     topseller.map(async (el) => {
-                        let p_id=el.op_product_id
+                        let p_id = el.op_product_id
                         if (p_id) {
                             condition = `where p.p_id ='${p_id}' `
                         }
@@ -112,12 +117,42 @@ module.exports.Listproduct = async (req, res) => {
 
             }
         }
+
+        if (p_id) {
+            let listproduct = await model.ListproductQuerry(condition);
+            if (listproduct.length > 0) {
+
+                let data = await Promise.all(
+                    listproduct.map(async (el) => {
+                        let getreview = await model.GetReview(el.p_id);
+                        el.reviews = getreview;
+                        return el;
+                    })
+                );
+
+                return res.send({
+                    result: true,
+                    message: "data retrieved",
+                    list: data
+                });
+            } else {
+                return res.send({
+                    result: false,
+                    message: "data not found",
+                });
+
+            }
+        }
+        if(condition==""){
+            condition=`where p.p_upcoming = '0' `
+        }
         let listproduct = await model.ListproductQuerry(condition);
+        
         if (listproduct.length > 0) {
 
             let data = await Promise.all(
                 listproduct.map(async (el) => {
-                    let getreviewcount = await model.GetReview(el.p_id);
+                    let getreviewcount = await model.GetReviewCount(el.p_id);
                     el.reviewcount = getreviewcount[0]?.review_count;
                     return el;
                 })
@@ -135,8 +170,6 @@ module.exports.Listproduct = async (req, res) => {
             });
 
         }
-
-
 
     } catch (error) {
         return res.send({
@@ -193,7 +226,7 @@ module.exports.Editproduct = async (req, res) => {
                 });
             }
 
-            const { p_id, productname, prize, category, concern_category, discount_prize, discount, stock, description } = fields;
+            const { p_id, productname, prize, category, concern_category, discount_prize, discount, stock, description,p_upcoming } = fields;
 
             if (!p_id) {
                 return res.send({
@@ -219,7 +252,7 @@ module.exports.Editproduct = async (req, res) => {
             if (category) updates.push(`p_category='${category}'`)
             if (concern_category) updates.push(`p_concern_category='${concern_category}'`)
             if (stock) updates.push(`p_stocks='${stock}'`)
-
+            if (p_upcoming) updates.push(`p_upcoming='${p_upcoming}'`)
 
             if (updates.length > 0) {
                 const updateQuery = `SET ${updates.join(', ')}`;
