@@ -23,7 +23,7 @@ module.exports.AddOrder = async (req, res) => {
         }
         if (payment_method == "cash on delivery") {
             let date = moment().format("YYYY-MM-DD");
-            var addorder = await model.AddOrderquery(u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, address_id);
+            var addorder = await model.AddOrderquery(u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode);
             console.log(addorder.insertId, "orderid");
 
             if (addorder.affectedRows) {
