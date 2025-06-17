@@ -72,11 +72,14 @@ var { FavList } = require('./controller/listfavourite')
 route.post('/list/favourite', FavList)
 
 
+
 var { AddOrder } = require('./controller/order')
 route.post('/add/order', AddOrder)                                       //payment gateway integration                                 
 
 var { RazorpayCallback } = require('./controller/razorpaycallback')
 route.get('/razorpay/callback', RazorpayCallback)                       //payment gateway integration callback
+
+
 
 var { CancelOrder } = require('./controller/cancelOrder')
 route.post('/cancel-order', CancelOrder)
@@ -84,9 +87,11 @@ route.post('/cancel-order', CancelOrder)
 var { Trackorder } = require('./controller/trackingorder')
 route.post('/update/order-tracking', Trackorder)
 
-
 var { listorder } = require('./controller/listorder')
 route.post('/list/order', listorder)
+
+var { Vieworder } = require('./controller/listorder')
+route.post('/view-order', Vieworder)
 
 var { deleteorder } = require('./controller/deleteorder')
 route.post('/delete/order', deleteorder)
@@ -174,5 +179,27 @@ route.post('/edit/address',EditAddress)
 
 var{deleteAddress}=require('./controller/addAddress')
 route.post('/delete/address',deleteAddress)
+
+var{addPartners}=require('./controller/partners')
+route.post('/add/partners',addPartners)
+
+var{listPartners}=require('./controller/partners')
+route.post('/list/partners',listPartners)
+
+var{deletePartners}=require('./controller/partners')
+route.post('/delete/partners',deletePartners)
+
+var{AddDeliveryTime}=require('./controller/deliverTime')
+route.post('/add/delivery-time',AddDeliveryTime)
+
+var{ListDeliveryTime}=require('./controller/deliverTime')
+route.post('/list/delivery-time',ListDeliveryTime)
+
+var{deleteDeliveryTime}=require('./controller/deliverTime')
+route.post('/delete/delivery-time',deleteDeliveryTime)
+
+var{CheckDeliveryTime}=require('./controller/deliverTime')
+route.post('/check/delivery-time',CheckDeliveryTime)
+
 
 module.exports = route
