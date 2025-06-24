@@ -90,8 +90,8 @@ route.post('/update/order-tracking', Trackorder)
 var { listorder } = require('./controller/listorder')
 route.post('/list/order', listorder)
 
-var { Vieworder } = require('./controller/listorder')
-route.post('/view-order', Vieworder)
+// var { Vieworder } = require('./controller/listorder')
+// route.post('/view-order', Vieworder)
 
 var { deleteorder } = require('./controller/deleteorder')
 route.post('/delete/order', deleteorder)
@@ -200,6 +200,9 @@ route.post('/delete/delivery-time',deleteDeliveryTime)
 
 var{CheckDeliveryTime}=require('./controller/deliverTime')
 route.post('/check/delivery-time',CheckDeliveryTime)
+
+var{Dashboard}=require('./controller/dashboard')
+route.post('/dashboard',Dashboard)
 
 
 module.exports = route

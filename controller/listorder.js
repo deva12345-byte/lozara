@@ -1,13 +1,23 @@
 const model = require('../model/listorder');
+
 module.exports.listorder = async (req, res) => {
+
     try {
         let { u_id } = req.body || {}
+        
         let checkuser = await model.Checkuser(u_id)
 
         var condition = ''
+        if (checkuser.length == 0) {
+            return res.send({
+                result: false,
+                message: "User not found",
+            });
+        }
 
-        if (checkuser.u_role == 'user') {
-            condition = `where od_u_id='${u_id}'`
+        if (checkuser[0]?.u_role == 'user') {
+            
+            condition = `WHERE orders.od_u_id='${u_id}'`
         }
 
         let listorder = await model.listorderQuery(condition);
@@ -17,7 +27,6 @@ module.exports.listorder = async (req, res) => {
                 result: true,
                 message: "data retrieved",
                 list: listorder,
-
             });
 
         } else {
@@ -25,7 +34,6 @@ module.exports.listorder = async (req, res) => {
                 result: false,
                 message: "data not found",
             });
-
         }
     } catch (error) {
         return res.send({
@@ -38,39 +46,39 @@ module.exports.listorder = async (req, res) => {
 }
 
 
-module.exports.Vieworder = async (req, res) => {
-    try {
-        let { od_id } = req.body || {}
-        let checkorder = await model.CheckOrder(od_id)
-        if (checkorder.length == 0) {
-            return res.send({
-                result: true,
-                message: "Order not found",
+// module.exports.Vieworder = async (req, res) => {
+//     try {
+//         let { od_id } = req.body || {}
+//         let checkorder = await model.CheckOrder(od_id)
+//         if (checkorder.length == 0) {
+//             return res.send({
+//                 result: true,
+//                 message: "Order not found",
 
-            });
-        }
-        let vieworder = await model.listorderproductQuery(od_id);
-        if (vieworder.length > 0) {
-            return res.send({
-                result: true,
-                message: "data retrieved",
-                list: vieworder,
+//             });
+//         }
+//         let vieworder = await model.listorderproductQuery(od_id);
+//         if (vieworder.length > 0) {
+//             return res.send({
+//                 result: true,
+//                 message: "data retrieved",
+//                 list: vieworder,
 
-            });
+//             });
 
-        } else {
-            return res.send({
-                result: false,
-                message: "data not found",
-            });
+//         } else {
+//             return res.send({
+//                 result: false,
+//                 message: "data not found",
+//             });
 
-        }
-    } catch (error) {
-        return res.send({
-            result: false,
-            message: error.message,
-        });
-    }
+//         }
+//     } catch (error) {
+//         return res.send({
+//             result: false,
+//             message: error.message,
+//         });
+//     }
 
 
-}
+// }

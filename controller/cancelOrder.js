@@ -9,19 +9,59 @@ module.exports.CancelOrder = async (req, res) => {
 
         var user_id = req.headers.user_id;
         var order_id = req.body.order_id;
+        var order_product_id = req.body.order_product_id;
+
         if (!user_id || !order_id) {
             return res.send({
                 result: false,
                 message: "user id and order id is required"
             })
         }
+        
         let checkuser = await model.CheckUser(user_id);
-        if (checkuser.length > 0) {
+
+        if (checkuser.length == 0) {
+            return res.send({
+                result: false,
+                message: "user not found"
+            })
+        }
             let checkorder = await model.CheckOrder(order_id, user_id);
+             if (checkorder.length== 0) {
+                return res.send({
+                    result: false,
+                    message: "Order not found"
+                })
+             }
+
+              let checkorderproduct = await model.CheckOrderProduct(order_product_id);
+             if (checkorderproduct.length== 0) {
+                return res.send({
+                    result: false,
+                    message: "Order product not found"
+                })
+             }
+
             let getaddress = await model.Getaddress(checkorder[0]?.od_address_id);
+
+            var deliverystatus = checkorderproduct[0]?.op_delivery_status
 
             var order_date = checkorder[0]?.od_created_at
 
+            if (deliverystatus == 'Cancelled') {
+                return res.send({
+                    result: true,
+                    message: "This order is already cancelled "
+                })
+            }
+
+            if (deliverystatus == 'Delivered' || deliverystatus == 'Out for Delivery') {
+                return res.send({
+                    result: true,
+                    message: "This order cannot be cancelled,You exceeded the cancel time! "
+                })
+            }
+            
             if (checkorder.length > 0) {
                 if (checkorder[0].od_payment_method !== 'Cash on Delivery') {
                     var paymentId = checkorder[0].payment_id; // Replace PAYMENT_ID with the actual payment ID
@@ -43,7 +83,7 @@ module.exports.CancelOrder = async (req, res) => {
 
                     axios.post(`https://api.razorpay.com/v1/payments/${paymentId}/refund`, requestData, authHeader)
                         .then(async response => {
-                            let removeorder = await model.RemoveOrder(order_id);
+                            let removeorder = await model.RemoveOrder(order_product_id);
 
                             console.log('Refund successful:', response?.data);
                             res.send({
@@ -53,7 +93,7 @@ module.exports.CancelOrder = async (req, res) => {
                         })
 
                         .catch(error => {
- 
+
                             console.error(error?.response?.data?.error?.description);
                             res.send({
                                 result: false,
@@ -62,7 +102,7 @@ module.exports.CancelOrder = async (req, res) => {
 
                         });
                 } else {
-                    let removeorder = await model.RemoveOrder(order_id);
+                    let removeorder = await model.RemoveOrder(order_product_id);
 
                     let transporter = nodemailer.createTransport({
                         host: "smtp.hostinger.com",
@@ -293,12 +333,7 @@ module.exports.CancelOrder = async (req, res) => {
                     message: "order details not found"
                 })
             }
-        } else {
-            return res.send({
-                result: false,
-                message: "user not found"
-            })
-        }
+        
     } catch (error) {
         return res.send({
             result: false,

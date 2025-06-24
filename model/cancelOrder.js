@@ -9,15 +9,21 @@ module.exports.CheckUser = async (user_id) => {
 };
 
 module.exports.CheckOrder = async (order_id, user_id) => {
-    var Query = `SELECT * FROM orders WHERE od_id = ? AND od_u_id = ? AND od_delivery_status NOT IN ('Out for Delivery', 'Delivered')`;
+    var Query = `SELECT * FROM orders WHERE od_id = ? AND od_u_id = ?`;
     var data = query(Query, [order_id, user_id]);
     return data;
 };
 
-module.exports.RemoveOrder = async (order_id) => {
-    var Query = `UPDATE orders
-    SET od_delivery_status = 'Cancelled' WHERE od_id = ?`;
-    var data = query(Query, [order_id]);
+module.exports.CheckOrderProduct = async (order_product_id) => {
+    var Query = `SELECT * FROM order_product WHERE op_id = ?`;
+    var data = query(Query, [order_product_id]);
+    return data;
+};
+
+module.exports.RemoveOrder = async (order_product_id) => {
+    var Query = `UPDATE order_product
+    SET op_delivery_status = 'Cancelled' WHERE op_id = ?`;
+    var data = query(Query, [order_product_id]);
     return data;
 };
 

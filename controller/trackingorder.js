@@ -2,10 +2,10 @@ const model = require('../model/trackingorder');
 
 module.exports.Trackorder = async (req, res) => {
     try {
-        let { od_id, status } = req.body || {};
+        let { op_id, status } = req.body || {};
 
         // Validate required fields
-        if (!od_id || !status) {
+        if (!op_id || !status) {
             return res.send({
                 result: false,
                 message: "Missing order ID or status",
@@ -13,7 +13,7 @@ module.exports.Trackorder = async (req, res) => {
         }
 
         // Allowed status values
-        const allowedStatuses = ['Pending', 'Cash on Delivery', 'Out for Delivery', 'Delivered', 'Cancelled'];
+        const allowedStatuses = ['Order confirmed','Packing','Shipped','Out for Delivery','delivered','Cancelled'];
 
         if (!allowedStatuses.includes(status)) {
             return res.send({
@@ -23,24 +23,24 @@ module.exports.Trackorder = async (req, res) => {
         }
 
         // Check if order exists
-        let Checkorder = await model.CheckorderQuery(od_id);
+        let Checkorder = await model.CheckorderproductQuery(op_id);
         if (Checkorder.length > 0) {
-            let Trackorder = await model.TrackorderQuery(status, od_id);
+            let Trackorder = await model.TrackorderQuery(status, op_id);
             if (Trackorder.affectedRows > 0) {
                 return res.send({
                     result: true,
-                    message: "Successfully updated delivery status",
+                    message: "Successfully updated product delivery status",
                 });
             } else {
                 return res.send({
                     result: false,
-                    message: "Failed to update delivery status",
+                    message: "Failed to update product delivery status",
                 });
             }
         } else {
             return res.send({
                 result: false,
-                message: "Order not found",
+                message: "product Order not found",
             });
         }
     } catch (error) {

@@ -8,8 +8,10 @@ module.exports.Checkuser = async (u_id) => {
     return data;
 }
 
-module.exports.listorderQuery= async (condition) => {
-    var Query = `SELECT * FROM orders ${condition}`;
+module.exports.listorderQuery = async (condition) => {
+    var Query = `SELECT * FROM orders
+    INNER JOIN order_product ON orders.od_id = order_product.op_order_id
+    LEFT JOIN products ON order_product.op_product_id = products.p_id ${condition}`;
     var data = query(Query);
     return data;
 }

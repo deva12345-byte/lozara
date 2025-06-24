@@ -89,7 +89,6 @@ module.exports.deletePartners = async (req, res) => {
     try {
         let pt_id = req.body.pt_id;
 
-        
         if (!pt_id) {
             return res.send({
                 result: false,
