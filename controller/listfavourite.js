@@ -7,7 +7,7 @@ module.exports.FavList = async (req, res) => {
         if (!user_id) {
             return res.send({
                 result: false,
-                message: "insucefficent parameter"
+                message: "user id is required"
             })
         }
         let data = await model.CheckProduct(user_id)

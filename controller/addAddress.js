@@ -3,7 +3,7 @@ var model = require("../model/addAddress");
 module.exports.addAddress = async (req, res) => {
 
     try {
-        let { user_id, type, heading, address, state, district, pincode,phone, setdefault } = req.body
+        let { user_id, type, heading, address, state, district, pincode, phone, setdefault } = req.body
 
         if (!user_id || !type || !heading || !address || !state || !district || !pincode || !phone) {
             return res.send({
@@ -12,7 +12,10 @@ module.exports.addAddress = async (req, res) => {
             });
         }
 
-        let addAddress = await model.AddAddressQuery(user_id, type, heading, address, state, district, pincode,phone, setdefault);
+        if (setdefault === 1) {
+            let clearalldefaultaddress = await model.ClearallDefaultAddress(user_id)
+        }
+        let addAddress = await model.AddAddressQuery(user_id, type, heading, address, state, district, pincode, phone, setdefault);
 
         if (addAddress.affectedRows > 0) {
             return res.send({
@@ -99,7 +102,7 @@ module.exports.deleteAddress = async (req, res) => {
 }
 module.exports.EditAddress = async (req, res) => {
     try {
-        const { adr_id, type, heading, address, state, district, pincode, setdefault } = req.body;
+        const { adr_id, u_id, type, heading, address, state, district, pincode, setdefault } = req.body;
 
         if (!adr_id) {
             return res.send({
@@ -117,6 +120,10 @@ module.exports.EditAddress = async (req, res) => {
             });
 
         } else {
+
+            if (setdefault === 1) {
+                let clearalldefaultaddress = await model.ClearallDefaultAddress(u_id)
+            }
             let condition = ``;
 
             if (type) {

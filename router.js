@@ -123,6 +123,9 @@ route.post('/edit/get_in_touch', editgetintouch)
 var { reviewadd } = require('./controller/reviewadd')
 route.post('/add/review', reviewadd)
 
+var { ListReviews } = require('./controller/reviewadd')
+route.post('/list/review', ListReviews)
+
 var { addourstandard } = require('./controller/ourstandard')
 route.post('/add/ourstandard', addourstandard)
 
@@ -204,5 +207,16 @@ route.post('/check/delivery-time',CheckDeliveryTime)
 var{Dashboard}=require('./controller/dashboard')
 route.post('/dashboard',Dashboard)
 
+var{AddBlog}=require('./controller/blogs')
+route.post('/add/blog',AddBlog)
+
+var{lisṭBlogs}=require('./controller/blogs')
+route.post('/list/blog',lisṭBlogs)
+
+var{EditBlogs}=require('./controller/blogs')
+route.post('/edit/blog',EditBlogs)
+
+var{DeleteBlogs}=require('./controller/blogs')
+route.post('/delete/blog',DeleteBlogs)
 
 module.exports = route

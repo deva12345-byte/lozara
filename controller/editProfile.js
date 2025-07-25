@@ -34,21 +34,21 @@ module.exports.EditPersonalInfo = async (req, res) => {
 
                 if (name) {
                     if (condition == '') {
-                        condition = `set u_name ='${name}' `
+                        condition = `set u_name ='${name}'`
                     } else {
                         condition += `,u_name='${name}'`
                     }
                 }
                 if (email) {
                     if (condition == '') {
-                        condition = `set u_email='${email}' `
+                        condition = `set u_email='${email}'`
                     } else {
                         condition += `,u_email='${email}'`
                     }
                 }
                 if (mobile) {
                     if (condition == '') {
-                        condition = `set u_mobile ='${mobile}' `
+                        condition = `set u_mobile ='${mobile}'`
                     } else {
                         condition += `,u_mobile='${mobile}'`
                     }

@@ -26,8 +26,8 @@ module.exports.CheckWish = async (p_id, user_id) => {
     return data;
 };
 
-module.exports.RemoveWish = async (p_id) => {
-    var Query = `DELETE FROM fav where f_p_id = ?`;
-    var data = query(Query, [p_id]);
+module.exports.RemoveWish = async (p_id,user_id) => {
+    var Query = `DELETE FROM fav where f_p_id = ? and f_u_id=?`;
+    var data = query(Query, [p_id,user_id]);
     return data;
 };
