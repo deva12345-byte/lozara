@@ -31,3 +31,9 @@ module.exports.listorderproductQuery= async (od_id) => {
     return data;
 
 }
+
+module.exports.Getproductimages = async (product_id) => {
+    var Query = `select * from product_images where pi_product_id =?`
+    var data = query(Query, [product_id]);
+    return data;
+}

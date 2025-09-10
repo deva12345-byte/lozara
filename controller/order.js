@@ -1,6 +1,7 @@
 var model = require("../model/order");
 var moment = require("moment");
 var nodemailer = require("nodemailer");
+let axios = require('axios')
 
 module.exports.AddOrder = async (req, res) => {
     try {
@@ -10,68 +11,99 @@ module.exports.AddOrder = async (req, res) => {
             auth: {
                 type: "custom",
                 method: "PLAIN",
-                user: 'noreply@drlifeboat.com',
-                pass: 'Drlifeboat@noreply123',
+                 user:process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD,
             },
         });
-        var { u_id, amount, payment_method, user_name, user_email, user_mobile_no, address_id, product_details } = req.body;
-        if (!u_id || !amount || !payment_method || !user_name || !user_email || !user_mobile_no || !address_id || !product_details) {
+
+        let date = moment().format("YYYY-MM-DD");
+
+        var { u_id, amount, payment_method, user_name, user_email, user_mobile_no, address_id, user_address, user_state, user_district, landmark, user_city, user_zipcode, product_details } = req.body;
+
+        if (!amount || !payment_method || !user_name || !user_email || !user_mobile_no || !product_details) {
             return res.send({
                 result: false,
                 messagae: "insufficent parameter"
             })
         }
-        if (payment_method == "cash on delivery") {
-            let date = moment().format("YYYY-MM-DD");
-            var addorder = await model.AddOrderquery(u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode);
-            console.log(addorder.insertId, "orderid");
 
-            if (addorder.affectedRows) {
-                // var product = product_details
-                //  console.log(product,"ppp");
-                var tablehtml = "";
-                let products = typeof product_details === "string" ? JSON.parse(product_details) : product_details;
+        if (!u_id) {
 
-                console.log(products, "vvvvv");
+            let checkmobile = await model.CheckMobile(user_mobile_no);
 
-                await Promise.all(
-                    products.map(async (element) => {
+            if (checkmobile.length > 0) {
+                u_id = checkmobile[0]?.u_id
 
-                        var insertproduct = await model.ProductInsert(
-                            addorder.insertId,
-                            element)
+            } else {
+                let role = 'guest'
 
-                        console.log(element.product_id);
+                let adduser = await model.AddUser(user_name, user_email, user_mobile_no, user_address, user_state, user_district, user_city, user_zipcode, date, role);
+                if (adduser.affectedRows == 0) {
+                    return res.send({
+                        result: false,
+                        message: "error in adding user details"
 
-                        let checkproduct = await model.getproduct(element.product_id);
-                        console.log(checkproduct);
-                        if (checkproduct.length > 0) {
+                    })
+                } else {
+                    u_id = adduser.insertId
 
-                            var balancestock = checkproduct[0].p_stocks - element.quantity
-                            console.log(balancestock);
-                            let addstock = await model.AddStocks(balancestock, element.product_id)
+                }
+            }
 
-                            tablehtml += `<tr>
+        }
+
+        console.log("user_id :", u_id);
+
+        var addorder = await model.AddOrderquery(u_id, amount, date, payment_method, user_name, user_email, user_mobile_no, address_id, user_address, user_state, user_district, user_city, user_zipcode);
+        console.log(addorder.insertId, "orderid");
+
+        if (addorder.affectedRows) {
+            // var product = product_details
+            //  console.log(product,"ppp");
+            var tablehtml = "";
+            let products = typeof product_details === "string" ? JSON.parse(product_details) : product_details;
+
+            // console.log(products, "vvvvv");
+
+            await Promise.all(
+                products.map(async (element) => {
+
+                    var insertproduct = await model.ProductInsert(
+                        addorder.insertId,
+                        element)
+
+                    console.log(element.product_id);
+
+                    let checkproduct = await model.getproduct(element.product_id);
+                    // console.log(checkproduct);
+                    if (checkproduct.length > 0) {
+
+                        var balancestock = checkproduct[0].p_stocks - element.quantity
+                        // console.log(balancestock);
+                        let addstock = await model.AddStocks(balancestock, element.product_id)
+
+                        tablehtml += `<tr>
                         <td>${checkproduct[0].p_productname}</td>
                         <td>${checkproduct[0].p_discount_prize}</td>
+                        <td>${element.packet_size}</td>
                         <td>${element.quantity}</td>
                         <td>${parseFloat(checkproduct[0].p_discount_prize) *
-                                parseFloat(element.quantity)}</td>
+                            parseFloat(element.quantity)}</td>
                             </tr>`;
-                        } else {
-                            return res.send({
-                                result: false,
-                                message: "product not found"
-                            })
-                        }
-                    }));
+                    } else {
+                        return res.send({
+                            result: false,
+                            message: "product not found"
+                        })
+                    }
+                }));
 
-                if (payment_method == "cash on delivery") {
+            if (payment_method == "cash on delivery") {
 
-                    let data = [{
-                        email: user_email,
-                        subject: "LOZARA ORDER",
-                        html: `<!DOCTYPE html>
+                let data = [{
+                    email: user_email,
+                    subject: "LOZARA ORDER",
+                    html: `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -138,6 +170,7 @@ module.exports.AddOrder = async (req, res) => {
                 <tr>
                     <th>Product</th>
                     <th>Amount</th>
+                    <th>Packet Quantity</th>
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
@@ -160,91 +193,93 @@ module.exports.AddOrder = async (req, res) => {
 `}
 
 
-                    ]
-                    let output = await Promise.all(
-                        data.map(async (element) => {
-                            let info = await transporter.sendMail({
-                                from: "LOZARA <noreply@drlifeboat.com>",
-                                to: element.email,
-                                subject: element.subject,
-                                html: element.html,
-                            });
+                ]
+                let output = await Promise.all(
+                    data.map(async (element) => {
+                        let info = await transporter.sendMail({
+                            from: `LOZARA <${process.env.EMAIL}>`,
+                            to: element.email,
+                            subject: element.subject,
+                            html: element.html,
+                        });
 
-                            nodemailer.getTestMessageUrl(info);
-                            // console.log(info, "check");
-                            return true;
-                        })
-                    );
-                    if (output.length > 0) {
-                        return res.send({
-                            result: true,
-                            message: "order added successfully",
-                        });
-                    } else {
-                        return res.send({
-                            result: false,
-                            message: "order not confirmed ,pls try again",
-                        });
-                    }
+                        nodemailer.getTestMessageUrl(info);
+                        // console.log(info, "check");
+                        return true;
+                    })
+                );
+                if (output.length > 0) {
+                    return res.send({
+                        result: true,
+                        message: "order added successfully",
+                    });
                 } else {
-
-                    let key_id = "rzp_live_uWwzPjKoomxUqv"
-                    let key_secret = "ImoGHKUUoqKw7JfTKt3IAnBX"
-
-                    //-------test -----------//
-
-                    // let key_id = "rzp_test_OV69louybHZfVB"
-                    // let key_secret = "n53FP19r6Wy35LLdlqBCxoCH"
-
-                    let callbackurl = `https://lunarsenterprises.com:6029/lozara/razorpay/callback?order_id=${addorder.insertId}`
-                    var authHeader = {
-                        auth: {
-                            username: key_id,
-                            password: key_secret,
-                        },
-                    };
-                    var paymentLinkData = {
-                        amount: Number(amount) * 100, // Amount in paisa
-                        currency: 'INR',
-                        description: 'payment for product', // You can use the merchantReference or any appropriate description here
-                        customer: {
-                            name: user_name,
-                            email: user_email,
-                            phone: user_mobile_no // Assuming user is an object with name, contact, and email properties
-                        },
-                        callback_url: callbackurl
-                    };
-
-
-                    axios.post('https://api.razorpay.com/v1/payment_links', paymentLinkData, authHeader)
-                        .then(response => {
-                            console.log('Payment link created successfully:', response.data);
-                            return res.json({
-                                result: true,
-                                message: 'order added successfully',
-                                paymentLinkUrl: response.data.short_url
-                            });
-                            // Handle response data as needed
-                        })
-                        .catch(error => {
-                            console.error('Error creating payment link:', error.response.data.error);
-                            // Handle error response
-                        });
-
+                    return res.send({
+                        result: false,
+                        message: "order not confirmed ,pls try again",
+                    });
                 }
-
             } else {
-                return res.send({
-                    result: false,
-                    message: "failed to order product "
-                })
+
+                //------live--------------//
+
+                // let key_id = process.env.KEY_ID
+                // let key_secret =process.env.KEY_SECRET
+
+                //-------test -----------//
+
+                const key_id = process.env.TEST_KEY_ID
+                const key_secret = process.env.TEST_KEY_SECRET
+console.log("api key",key_id,key_secret);
+
+                let callback_url = `https://lunarsenterprises.com:6029/lozara/razorpay/callback?order_id=${addorder.insertId}`
+                const authHeader = {
+                    auth: {
+                        username: key_id,
+                        password: key_secret,
+                    },
+                };
+                const paymentLinkData = {
+                    amount: Number(amount) * 100, // Amount in paisa
+                    currency: 'INR',
+                    description: 'payment for product', // You can use the merchantReference or any appropriate description here
+                    customer: {
+                        name: user_name,
+                        email: user_email,
+                        phone: user_mobile_no // Assuming user is an object with name, contact, and email properties
+                    },
+                    callback_url,
+                };
+
+
+                axios.post('https://api.razorpay.com/v1/payment_links', paymentLinkData, authHeader)
+                    .then(response => {
+                        console.log('Payment link created successfully:', response.data);
+                        return res.json({
+                            result: true,
+                            message: 'Payment link created successfully',
+                            paymentLinkUrl: response.data.short_url
+                        });
+                        // Handle response data as needed
+                    })
+                    .catch(error => {
+                        console.error('Error creating payment link:', error.response.data.error);
+                        return res.json({
+                            result: false,
+                            message: 'failed to generate payment link',
+                        });
+                        // Handle error response
+                    });
+
             }
+
         } else {
             return res.send({
                 result: false,
-                message: "online payment not avilable "
+                message: "failed to order product "
             })
         }
+
     } catch (error) {
         return res.send({
             result: false,

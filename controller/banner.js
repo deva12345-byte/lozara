@@ -16,10 +16,10 @@ module.exports.AddBanner = async (req, res) => {
                 });
             }
             let { heading, title, description } = fields
-            if (!files.image || !heading || !title || !description) {
+            if (!files.image) {
                 return res.status(400).json({
                     result: false,
-                    message: 'all fields are required / No image file uploaded.',
+                    message: 'No image file uploaded.',
                 });
             }
             console.log(heading, title, description);

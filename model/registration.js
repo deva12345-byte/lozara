@@ -14,9 +14,9 @@ module.exports.CheckMail = async (email) => {
     return data;
 }
 
-module.exports.AddUser = async (name, email, hashedpasssword, mobile, address, state, district, pincode, date) => {
-    var Query = `insert into users(u_name,u_email,u_password,u_mobile,u_address,u_state,u_district,u_pincode,u_joindate)values(?,?,?,?,?,?,?,?,?)`;
-    var data = await query(Query, [name, email, hashedpasssword, mobile, address, state, district, pincode, date])
+module.exports.AddUser = async (name, email, hashedpasssword, mobile, address, state, district,city, pincode, date) => {
+    var Query = `insert into users(u_name,u_email,u_password,u_mobile,u_address,u_state,u_district,u_city,u_pincode,u_joindate)values(?,?,?,?,?,?,?,?,?,?)`;
+    var data = await query(Query, [name, email, hashedpasssword, mobile, address, state, district,city, pincode, date])
     return data;
 }
 
@@ -26,9 +26,9 @@ module.exports.AddMobileUser = async (mobile, date, role) => {
     return data;
 }
 
-module.exports.UpdateUser = async (name, email, hashedpasssword, address, state, district, pincode, role,u_id) => {
-    var Query = `update users set u_name=?,u_email=?,u_password=?,u_address=?,u_state=?,u_district=?,u_pincode=?,u_role=? where u_id =?`;
-    var data = await query(Query, [name, email, hashedpasssword, address, state, district, pincode, role,u_id])
+module.exports.UpdateUser = async (name, email, hashedpasssword, address, state, district,city, pincode, role,u_id) => {
+    var Query = `update users set u_name=?,u_email=?,u_password=?,u_address=?,u_state=?,u_district=?,u_city=?,u_pincode=?,u_role=? where u_id =?`;
+    var data = await query(Query, [name, email, hashedpasssword, address, state, district,city, pincode, role,u_id])
     return data;
 }
 

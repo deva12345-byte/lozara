@@ -4,7 +4,7 @@ var bcrypt = require("bcrypt");
 
 module.exports.Register = async (req, res) => {
     try {
-        var { name, email, password, mobile, address, state, district, pincode, register_method } = req.body
+        var { name, email, password, mobile, address, state, district,city, pincode, register_method } = req.body
         var date = moment().format('YYYY-MM-DD')
 
         if (register_method == "userRegister") {
@@ -26,7 +26,7 @@ module.exports.Register = async (req, res) => {
             }
 
             //guest user regitering
-            
+
             if (checkmobile.length > 0 && checkmobile[0]?.u_role === 'guest') {
 
                 let checkmail = await model.CheckMail(email);
@@ -40,7 +40,7 @@ module.exports.Register = async (req, res) => {
                 }
                 let role = 'user'
                 var hashedpasssword = await bcrypt.hash(password, 10)
-                let updateuser = await model.UpdateUser(name, email, hashedpasssword, address, state, district, pincode, role, checkmobile[0]?.u_id);
+                let updateuser = await model.UpdateUser(name, email, hashedpasssword, address, state, district,city, pincode, role, checkmobile[0]?.u_id);
 
                 if (updateuser.affectedRows > 0) {
                     return res.send({
@@ -71,19 +71,18 @@ module.exports.Register = async (req, res) => {
             }
 
             var hashedpasssword = await bcrypt.hash(password, 10)
-            let adduser = await model.AddUser(name, email, hashedpasssword, mobile, address, state, district, pincode, date);
-
+            let adduser = await model.AddUser(name, email, hashedpasssword, mobile, address, state, district,city, pincode, date);
+            let user_id = adduser.insertId
             if (adduser.affectedRows) {
                 return res.send({
                     result: true,
-                    message: "registerd sucessfully"
+                    message: "registerd sucessfully",
+                    user_id: user_id
                 })
             } else {
                 return res.send({
                     result: false,
                     message: "error in adding user details"
-
-
                 })
 
             }

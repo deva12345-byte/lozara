@@ -111,7 +111,7 @@ module.exports.CancelOrder = async (req, res) => {
                             type: 'custom',
                             method: 'PLAIN',
                             user: 'nocontact@drlifeboat.com',
-                            pass: 'Drlifeboat@noreply123',
+                            pass: 'Lozara@2025',
                         },
                     });
 

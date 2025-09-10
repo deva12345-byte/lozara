@@ -23,6 +23,9 @@ route.post('/register', Register)
 var { Productadd } = require('./controller/product')
 route.post('/product/add', Productadd)
 
+var { AddProductIngeridients } = require('./controller/product')
+route.post('/add/product-ingredients', AddProductIngeridients)
+
 var { Editproduct } = require('./controller/product')
 route.post('/product/edit', Editproduct)
 
@@ -218,5 +221,15 @@ route.post('/edit/blog',EditBlogs)
 
 var{DeleteBlogs}=require('./controller/blogs')
 route.post('/delete/blog',DeleteBlogs)
+
+var { AddOfferBanner } = require('./controller/offerBanner')
+route.post('/add/offer-banner', AddOfferBanner)
+
+var { ListOfferBanners } = require('./controller/offerBanner')
+route.post('/list/offer-banner', ListOfferBanners)
+
+var{AddTermsNconditionRefund,ListTermsNconditionRefunds}=require('./controller/refundTermsAndPolicy')
+route.post('/add/termsNcondition',AddTermsNconditionRefund)
+route.post('/list/termsNcondition',ListTermsNconditionRefunds)
 
 module.exports = route

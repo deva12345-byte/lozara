@@ -22,8 +22,8 @@ let checkcontact=await model.addcontactQuery(name,email,message)
         auth: {
             type: 'custom',
             method: 'PLAIN',
-            user: 'noreply@drlifeboat.com',
-            pass:'Drlifeboat@noreply123',
+             user:process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD,
         },
     });
 
@@ -163,7 +163,7 @@ let checkcontact=await model.addcontactQuery(name,email,message)
 
     data.forEach(async (el) => {
         let infos = await transporter.sendMail({
-            from: "LOZARA<noreply@drlifeboat.com>",
+            from: `LOZARA<${process.env.EMAIL}>`,
             to: el.email,
             subject: el.subject,
             html: el.html

@@ -4,9 +4,9 @@ const query =util.promisify(db.query).bind(db);
 
 
 
-module.exports.addcartQuery= async(userid,productid,quantity)=>{
-    var Query =`insert into cart(ct_user_id, ct_product_id,ct_quantity)values(?,?,?)`;
-    var data =query(Query,[userid,productid,quantity]);
+module.exports.addcartQuery= async(userid,productid,packet_size,quantity)=>{
+    var Query =`insert into cart(ct_user_id, ct_product_id,ct_packet_size,ct_quantity)values(?,?,?,?)`;
+    var data =query(Query,[userid,productid,packet_size,quantity]);
     return data;
 }
 

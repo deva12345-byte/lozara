@@ -12,8 +12,8 @@ module.exports.listPartnersQuery=async()=>{
     var Query =`select * from partners ;`
     var data= await query(Query);
     return data;
-
 }
+
 module.exports.checkPartnersQuery =async(pt_id)=>{
     var Query= `select * from partners where pt_id=?`;
     var data =await query(Query,[pt_id]);

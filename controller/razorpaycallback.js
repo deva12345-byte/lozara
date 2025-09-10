@@ -10,8 +10,8 @@ module.exports.RazorpayCallback = async (req, res) => {
         auth: {
             type: "custom",
             method: "PLAIN",
-            user: 'noreply@drlifeboat.com',
-            pass: 'Drlifeboat@noreply123',
+            user:process.env.EMAIL,
+            pass: process.env.EMAIL_PASSWORD,
         },
     });
 
@@ -29,6 +29,7 @@ module.exports.RazorpayCallback = async (req, res) => {
                     tablehtml += '<tr>' +
                         '<td>' + element.p_productname + ' (' + element.op_quantity + ' ' + element.p_unit + ')</td>' +
                         '<td>' + element.p_prize + '</td>' +
+                        '<td>' + element.op_packet_size + '</td>' +
                         '<td>' + element.op_quantity + '</td>' +
                         '<td>' + (parseFloat(element.p_prize) * parseFloat(element.op_quantity)) + '</td>' +
                         '</tr>';
@@ -36,7 +37,7 @@ module.exports.RazorpayCallback = async (req, res) => {
                 }));
 
             let info = await transporter.sendMail({
-                from: "LOZARA <noreply@drlifeboat.com>",
+                from: `LOZARA <${process.env.EMAIL}>`,
                 to: orders[0]?.user_email,
                 subject: "MESSAGE FROM LOZARA",
                 html: `<!DOCTYPE html>
@@ -106,6 +107,7 @@ module.exports.RazorpayCallback = async (req, res) => {
                 <tr>
                     <th>Product</th>
                     <th>Amount</th>
+                    <th>Packet Quantity</th>
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
@@ -129,6 +131,8 @@ module.exports.RazorpayCallback = async (req, res) => {
             });
 
             nodemailer.getTestMessageUrl(info);
+
+            // return res.redirect('https://lozara.shop/');
 
             return res.send(`<!DOCTYPE html>
                 <html lang="en">
@@ -184,7 +188,7 @@ module.exports.RazorpayCallback = async (req, res) => {
                     <div class="container">
                         <h1>Payment Successful</h1>
                         <p>Your payment was successful. Thank you for your purchase!</p>
-                        <a href="https://lozara.com/" class="button">Back to Home</a>
+                        <a href="https://lozara.shop/" class="button">Back to Home</a>
                     </div>
                 </body>
                 </html>
@@ -237,7 +241,7 @@ module.exports.RazorpayCallback = async (req, res) => {
                 <h1>Payment Failed</h1>
                 <p>We're sorry, but your payment could not be processed at this time.</p>
                 <p>Please try again later or contact our support team if the issue persists.</p>
-                <a href="https://lozara.com/">Go back to Home</a>
+                <a href="https://lozara.shop/">Go back to Home</a>
             </div>
         </body>
         </html>

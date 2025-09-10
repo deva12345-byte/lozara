@@ -4,7 +4,7 @@ module.exports.listorder = async (req, res) => {
 
     try {
         let { u_id } = req.body || {}
-        
+
         let checkuser = await model.Checkuser(u_id)
 
         var condition = ''
@@ -16,17 +16,26 @@ module.exports.listorder = async (req, res) => {
         }
 
         if (checkuser[0]?.u_role == 'user') {
-            
+
             condition = `WHERE orders.od_u_id='${u_id}'`
         }
 
         let listorder = await model.listorderQuery(condition);
 
         if (listorder.length > 0) {
+
+            let getorder = await Promise.all(
+                listorder.map(async (elem) => {
+                    let productimages = await model.Getproductimages(elem.p_id)
+                    elem.productimages = productimages
+                    return elem
+                })
+            )
+
             return res.send({
                 result: true,
                 message: "data retrieved",
-                list: listorder,
+                list: getorder,
             });
 
         } else {

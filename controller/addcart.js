@@ -3,8 +3,8 @@ const model = require('../model/addcart');
 
 module.exports.addcart = async (req, res) => {
     try {
-        let { userid, productid,quantity} = req.body
-        if (!userid || !productid) {
+        let { userid, productid, quantity, packet_size } = req.body
+        if (!userid || !productid || !quantity) {
             return res.send({
                 result: false,
                 message: "insufficent parameter"
@@ -13,7 +13,7 @@ module.exports.addcart = async (req, res) => {
         let checkcart = await model.checkcartQuery(userid, productid)
         console.log(checkcart);
         if (checkcart.length == 0) {
-            addtocart = await model.addcartQuery(userid, productid,quantity);
+            addtocart = await model.addcartQuery(userid, productid, packet_size, quantity);
             if (addtocart.affectedRows > 0) {
                 return res.send({
                     result: true,

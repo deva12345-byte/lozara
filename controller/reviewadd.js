@@ -1,6 +1,7 @@
 var model = require("../model/reviewadd");
 var formidable = require('formidable')
 var fs = require('fs')
+const path = require("path");
 
 module.exports.reviewadd = async (req, res) => {
     try {
@@ -23,7 +24,7 @@ module.exports.reviewadd = async (req, res) => {
                 });
             }
 
-            if (rating < 0 || rating > 5) {
+            if (rating <= 0 || rating > 5) {
                 return res.send({
                     result: false,
                     message: "Rating should be between 0 and 5"
@@ -44,21 +45,22 @@ module.exports.reviewadd = async (req, res) => {
 
             if (reviewadd.affectedRows > 0) {
                 let review_id = reviewadd.insertId
-                if (Array.isArray(files.image)) {
 
-                    for (const file of files.image) {
-                        var oldPath = file.filepath;
-                        var newPath = process.cwd() + "/uploads/review_image/" + file.originalFilename;
-                        let rawData = fs.readFileSync(oldPath);
+                const productImages = Array.isArray(files.image) ? files.image : [files.image];
+                if (files.image) {
+                    // Save product images
+                    for (const file of productImages) {
+                        if (!file || !file.filepath || !file.originalFilename) continue;
+
+                        const oldPath = file.filepath;
+                        const newPath = path.join(process.cwd(), '/uploads/review_image', file.originalFilename);
+                        const rawData = fs.readFileSync(oldPath);
                         fs.writeFileSync(newPath, rawData);
-                        var imagepath = ("/uploads/review_image/" + file.originalFilename);
-                        var Insertreviewimages = await model.AddReviewImagesQuery(review_id, imagepath)
-                        if (Insertreviewimages.affectedRows == 0) {
-                            return res.send({
-                                result: false,
-                                message: "failed to add review image"
-                            })
-                        }
+
+                        const imagePath = "/uploads/review_image/" + file.originalFilename;
+
+                        // Save each image with product_id
+                        var Insertreviewimages = await model.AddReviewImagesQuery(review_id, imagePath)
 
                     }
                 }
